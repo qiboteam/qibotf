@@ -19,8 +19,6 @@ try:
         from qibo_sim_tensorflow.custom_operators.python.ops.qibo_tf_custom_operators import apply_swap
         from qibo_sim_tensorflow.custom_operators.python.ops.qibo_tf_custom_operators import collapse_state
         from qibo_sim_tensorflow.custom_operators.python.ops.qibo_tf_custom_operators import measure_frequencies
-        # Import gradients
-        from qibo_sim_tensorflow.custom_operators.python.ops.qibo_tf_custom_operators_grads import _initial_state_grad
         _custom_operators_loaded = True
     except tf.errors.NotFoundError:  # pragma: no cover
         log.warning("Custom operators not found, skipping custom operators load.")
