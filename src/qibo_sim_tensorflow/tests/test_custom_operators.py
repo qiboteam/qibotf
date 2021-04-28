@@ -5,7 +5,7 @@ import itertools
 import pytest
 import numpy as np
 import tensorflow as K
-from qibo_sim_tensorflow import custom_operators as Kop
+from qibo_sim_tensorflow import custom_operators as op
 
 
 gpu_devices = K.config.list_logical_devices("GPU")
@@ -33,8 +33,8 @@ def test_initial_state(dtype, compile, threads):
     """Check that initial_state updates first element properly."""
     def apply_operator(dtype):
         """Apply the initial_state operator"""
-        return Kop.initial_state(nqubits=4, dtype=dtype,
-                                 is_matrix=False, omp_num_threads=threads)
+        return op.initial_state(nqubits=4, dtype=dtype,
+                                is_matrix=False, omp_num_threads=threads)
 
     func = apply_operator
     if compile:
@@ -52,10 +52,10 @@ def test_initial_state(dtype, compile, threads):
                           (8, 5, np.complex128, False, "abcdefgh,Ff->abcdeFgh")])
 @pytest.mark.parametrize("threads", [1, 4])
 def test_apply_gate(nqubits, target, dtype, compile, einsum_str, threads):
-    """Check that ``Kop.apply_gate`` agrees with einsum gate implementation."""
+    """Check that ``op.apply_gate`` agrees with einsum gate implementation."""
     def apply_operator(state, gate):
         qubits = qubits_tensor(nqubits, [target])
-        return Kop.apply_gate(state, gate, qubits, nqubits, target, threads)
+        return op.apply_gate(state, gate, qubits, nqubits, target, threads)
 
     state = random_complex((2 ** nqubits,), dtype=dtype)
     gate = random_complex((2, 2), dtype=dtype)
@@ -74,7 +74,7 @@ def test_apply_gate(nqubits, target, dtype, compile, einsum_str, threads):
                          [(2, True), (3, False), (4, True), (5, False)])
 @pytest.mark.parametrize("threads", [1, 4])
 def test_apply_gate_cx(nqubits, compile, threads):
-    """Check ``Kop.apply_gate`` for multiply-controlled X gates."""
+    """Check ``op.apply_gate`` for multiply-controlled X gates."""
     state = random_complex((2 ** nqubits,))
 
     target_state = np.array(state)
@@ -88,7 +88,7 @@ def test_apply_gate_cx(nqubits, compile, threads):
 
     def apply_operator(state):
         qubits = qubits_tensor(nqubits, [nqubits - 1], controls)
-        return Kop.apply_gate(state, xgate, qubits, nqubits, nqubits - 1, threads)
+        return op.apply_gate(state, xgate, qubits, nqubits, nqubits - 1, threads)
     if compile:
         apply_operator = K.function(apply_operator)
     state = apply_operator(state)
@@ -105,7 +105,7 @@ def test_apply_gate_cx(nqubits, compile, threads):
                           (6, 3, [0, 2, 4, 5], False, "ab,Bb->aB")])
 @pytest.mark.parametrize("threads", [1, 4])
 def test_apply_gate_controlled(nqubits, target, controls, compile, einsum_str, threads):
-    """Check ``K.op.apply_gate`` for random controlled gates."""
+    """Check ``op.apply_gate`` for random controlled gates."""
     state = random_complex((2 ** nqubits,))
     gate = random_complex((2, 2))
 
@@ -119,7 +119,7 @@ def test_apply_gate_controlled(nqubits, target, controls, compile, einsum_str, t
 
     def apply_operator(state):
         qubits = qubits_tensor(nqubits, [target], controls)
-        return Kop.apply_gate(state, gate, qubits, nqubits, target, threads)
+        return op.apply_gate(state, gate, qubits, nqubits, target, threads)
     if compile:
         apply_operator = K.function(apply_operator)
 
@@ -140,12 +140,12 @@ def test_apply_pauli_gate(nqubits, target, gate, compile, threads):
     state = random_complex((2 ** nqubits,))
     target_state = K.cast(state, dtype=state.dtype)
     qubits = qubits_tensor(nqubits, [target])
-    target_state = Kop.apply_gate(
+    target_state = op.apply_gate(
         state, matrices[gate], qubits, nqubits, target, threads)
 
     def apply_operator(state):
         qubits = qubits_tensor(nqubits, [target])
-        return getattr(Kop, "apply_{}".format(gate))(state, qubits, nqubits, target, threads)
+        return getattr(op, "apply_{}".format(gate))(state, qubits, nqubits, target, threads)
     if compile:
         apply_operator = K.function(apply_operator)
     state = apply_operator(state)
@@ -176,7 +176,7 @@ def test_apply_zpow_gate(nqubits, target, controls, compile, threads):
 
     def apply_operator(state):
         qubits = qubits_tensor(nqubits, [target], controls)
-        return Kop.apply_z_pow(state, phase, qubits, nqubits, target, threads)
+        return op.apply_z_pow(state, phase, qubits, nqubits, target, threads)
     if compile:
         apply_operator = K.function(apply_operator)
     state = apply_operator(state)
@@ -197,7 +197,7 @@ def test_apply_zpow_gate(nqubits, target, controls, compile, threads):
 @pytest.mark.parametrize("threads", [1, 4])
 def test_apply_twoqubit_gate_controlled(nqubits, targets, controls,
                                         compile, einsum_str, threads):
-    """Check ``K.op.apply_twoqubit_gate`` for random gates."""
+    """Check ``op.apply_twoqubit_gate`` for random gates."""
     state = random_complex((2 ** nqubits,))
     gate = random_complex((4, 4))
     gatenp = gate.numpy().reshape(4 * (2,))
@@ -212,7 +212,7 @@ def test_apply_twoqubit_gate_controlled(nqubits, targets, controls,
 
     def apply_operator(state):
         qubits = qubits_tensor(nqubits, targets, controls)
-        return Kop.apply_two_qubit_gate(state, gate, qubits, nqubits, *targets, threads)
+        return op.apply_two_qubit_gate(state, gate, qubits, nqubits, *targets, threads)
     if compile:
         apply_operator = K.function(apply_operator)
 
@@ -235,7 +235,7 @@ def test_apply_twoqubit_gate_controlled(nqubits, targets, controls,
                           (6, [0, 5], [1, 2, 3], False, "abc,ACac->AbC")])
 @pytest.mark.parametrize("threads", [1, 4])
 def test_apply_fsim(nqubits, targets, controls, compile, einsum_str, threads):
-    """Check ``K.op.apply_twoqubit_gate`` for random gates."""
+    """Check ``op.apply_twoqubit_gate`` for random gates."""
     state = random_complex((2 ** nqubits,))
     rotation = random_complex((2, 2))
     phase = random_complex((1,))
@@ -257,7 +257,7 @@ def test_apply_fsim(nqubits, targets, controls, compile, einsum_str, threads):
 
     def apply_operator(state):
         qubits = qubits_tensor(nqubits, targets, controls)
-        return Kop.apply_fsim(state, gate, qubits, nqubits, *targets, threads)
+        return op.apply_fsim(state, gate, qubits, nqubits, *targets, threads)
     if compile:
         apply_operator = K.function(apply_operator)
 
@@ -278,7 +278,7 @@ def test_apply_swap_with_matrix(compile, threads):
 
     def apply_operator(state):
         qubits = qubits_tensor(2, [0, 1])
-        return Kop.apply_swap(state, qubits, 2, 0, 1, threads)
+        return op.apply_swap(state, qubits, 2, 0, 1, threads)
     if compile:
         apply_operator = K.function(apply_operator)
     state = apply_operator(state)
@@ -312,7 +312,7 @@ def test_apply_swap_general(nqubits, targets, controls, compile, threads):
 
     def apply_operator(state):
         qubits = qubits_tensor(nqubits, targets, controls)
-        return Kop.apply_swap(state, qubits, nqubits, *targets, threads)
+        return op.apply_swap(state, qubits, nqubits, *targets, threads)
     if compile:
         apply_operator = K.function(apply_operator)
     state = apply_operator(state)
@@ -342,7 +342,7 @@ def test_collapse_state(nqubits, targets, results, dtype, threads):
     qubits = sorted(nqubits - np.array(targets) - 1)
     b2d = 2 ** np.arange(len(results) - 1, -1, -1)
     result = np.array(results).dot(b2d)
-    state = Kop.collapse_state(state, qubits, result, nqubits, True, threads)
+    state = op.collapse_state(state, qubits, result, nqubits, True, threads)
     np.testing.assert_allclose(state, target_state, atol=atol)
 
 
@@ -374,13 +374,13 @@ def test_custom_op_toy_callback(gate, compile, threads):
     htf = K.cast(np.array([[1, 1], [1, -1]]) / np.sqrt(2), dtype=state.dtype)
     qubits_t1 = qubits_tensor(2, [0])
     qubits_t2 = qubits_tensor(2, [0, 1])
-    apply_gate = {"h": functools.partial(Kop.apply_gate, gate=htf, qubits=qubits_t1,
+    apply_gate = {"h": functools.partial(op.apply_gate, gate=htf, qubits=qubits_t1,
                                          nqubits=2, target=0, omp_num_threads=threads),
-                  "x": functools.partial(Kop.apply_x, qubits=qubits_t1,
+                  "x": functools.partial(op.apply_x, qubits=qubits_t1,
                                          nqubits=2, target=0, omp_num_threads=threads),
-                  "z": functools.partial(Kop.apply_z, qubits=qubits_t1,
+                  "z": functools.partial(op.apply_z, qubits=qubits_t1,
                                          nqubits=2, target=0, omp_num_threads=threads),
-                  "swap": functools.partial(Kop.apply_swap, qubits=qubits_t2,
+                  "swap": functools.partial(op.apply_swap, qubits=qubits_t2,
                                             nqubits=2, target1=0, target2=1,
                                             omp_num_threads=threads)}
 
@@ -426,10 +426,10 @@ def test_transpose_state(nqubits, ndevices, threads):
         pieces = [state[i] for i in range(ndevices)]
         if gpu_devices:  # pragma: no cover
             # case not tested by GitHub workflows because it requires GPU
-            check_unimplemented_error(Kop.transpose_state,
+            check_unimplemented_error(op.transpose_state,
                                       pieces, new_state, nqubits, qubit_order, threads)
         else:
-            new_state = Kop.transpose_state(
+            new_state = op.transpose_state(
                 pieces, new_state, nqubits, qubit_order, threads)
             np.testing.assert_allclose(target_state, new_state.numpy())
 
@@ -446,18 +446,18 @@ def test_swap_pieces_zero_global(nqubits, threads):
         local = np.random.randint(1, nqubits)
 
         qubits_t = qubits_tensor(nqubits, [0, local])
-        target_state = Kop.apply_swap(
+        target_state = op.apply_swap(
             target_state, qubits_t, nqubits, 0, local, threads)
         target_state = K.reshape(target_state, shape)
 
         piece0, piece1 = state[0], state[1]
         if gpu_devices:  # pragma: no cover
             # case not tested by GitHub workflows because it requires GPU
-            check_unimplemented_error(Kop.swap_pieces,
+            check_unimplemented_error(op.swap_pieces,
                                       piece0, piece1, local - 1, nqubits - 1, threads)
         else:
-            K.op.swap_pieces(piece0, piece1, local - 1,
-                             nqubits - 1, threads)
+            op.swap_pieces(piece0, piece1, local - 1,
+                           nqubits - 1, threads)
             np.testing.assert_allclose(target_state[0], piece0.numpy())
             np.testing.assert_allclose(target_state[1], piece1.numpy())
 
@@ -479,7 +479,7 @@ def test_swap_pieces(nqubits, threads):
                            list(range(global_qubit + 1, nqubits)))
 
         qubits_t = qubits_tensor(nqubits, [global_qubit, local_qubit])
-        target_state = Kop.apply_swap(
+        target_state = op.apply_swap(
             target_state, qubits_t, nqubits, global_qubit, local_qubit, threads)
         target_state = K.reshape(target_state, nqubits * (2,))
         target_state = K.transpose(target_state, transpose_order)
@@ -491,40 +491,14 @@ def test_swap_pieces(nqubits, threads):
         piece0, piece1 = state[0], state[1]
         if gpu_devices:  # pragma: no cover
             # case not tested by GitHub workflows because it requires GPU
-            check_unimplemented_error(Kop.swap_pieces,
+            check_unimplemented_error(op.swap_pieces,
                                       piece0, piece1, local_qubit - 1, nqubits - 1, threads)
         else:
-            Kop.swap_pieces(piece0, piece1,
-                            local_qubit - int(global_qubit < local_qubit),
-                            nqubits - 1, threads)
+            op.swap_pieces(piece0, piece1,
+                           local_qubit - int(global_qubit < local_qubit),
+                           nqubits - 1, threads)
             np.testing.assert_allclose(target_state[0], piece0.numpy())
             np.testing.assert_allclose(target_state[1], piece1.numpy())
-
-
-@pytest.mark.skip("tf.tensor_scatter_nd_update bug on GPU (tensorflow#42581)")
-@pytest.mark.parametrize("dtype", [np.complex64, np.complex128])
-@pytest.mark.parametrize("compile", [False, True])
-def test_initial_state_gradient(dtype, compile):  # pragma: no cover
-    # Test skipped due to `tf.tensor_scatter_nd_update` bug on GPU
-    def grad_default(var):
-        update = np.array([1]).astype(dtype)
-        with K.optimization.GradientTape() as tape:
-            loss = K.backend.tensor_scatter_nd_update(var, [[0]], update)
-        return tape.gradient(loss, var)
-
-    def grad_custom(var):
-        with K.optimization.GradientTape() as tape:
-            loss = Kop.initial_state(var)
-        return tape.gradient(loss, var)
-
-    if compile:
-        grad_default = K.function(grad_default)
-        grad_custom = K.function(grad_custom)
-
-    zeros = K.optimization.Variable(K.zeros(10, dtype=dtype))
-    grad_reference = grad_default(zeros)
-    grad_custom_op = grad_custom(zeros)
-    np.testing.assert_allclose(grad_reference, grad_custom_op)
 
 
 @pytest.mark.parametrize("dtype", [np.float32, np.float64])
@@ -533,9 +507,9 @@ def test_measure_frequencies(dtype, inttype):
     import sys
     probs = np.ones(16, dtype=dtype) / 16
     frequencies = np.zeros(16, dtype=inttype)
-    frequencies = Kop.measure_frequencies(frequencies, probs, nshots=1000,
-                                          nqubits=4, omp_num_threads=1,
-                                          seed=1234)
+    frequencies = op.measure_frequencies(frequencies, probs, nshots=1000,
+                                         nqubits=4, omp_num_threads=1,
+                                         seed=1234)
     if sys.platform == "linux":
         target_frequencies = [60, 50, 68, 64, 53, 53, 67, 54, 64, 53, 67,
                               69, 76, 57, 64, 81]
@@ -558,9 +532,9 @@ def test_measure_frequencies_sparse_probabilities(nonzero):
         probs[i] = 1
     probs = probs / np.sum(probs)
     frequencies = np.zeros(8, dtype=np.int64)
-    frequencies = Kop.measure_frequencies(frequencies, probs, nshots=1000,
-                                          nqubits=3, omp_num_threads=1,
-                                          seed=1234)
+    frequencies = op.measure_frequencies(frequencies, probs, nshots=1000,
+                                         nqubits=3, omp_num_threads=1,
+                                         seed=1234)
     assert np.sum(frequencies) == 1000
     for i, freq in enumerate(frequencies):
         if i in nonzero:
