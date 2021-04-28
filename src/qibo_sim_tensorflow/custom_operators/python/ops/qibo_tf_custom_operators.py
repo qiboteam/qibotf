@@ -1,11 +1,10 @@
 """Use ops in python."""
 import tensorflow as tf
-from tensorflow.python.framework import load_library # pylint: disable=no-name-in-module
-from tensorflow.python.platform import resource_loader # pylint: disable=no-name-in-module
-from qibo.config import get_threads
+from tensorflow.python.framework import load_library  # pylint: disable=no-name-in-module
+from tensorflow.python.platform import resource_loader  # pylint: disable=no-name-in-module
 
 
-if tf.config.list_physical_devices("GPU"): # pragma: no cover
+if tf.config.list_physical_devices("GPU"):  # pragma: no cover
     # case not covered by GitHub workflows because it requires GPU
     library_path = '_qibo_tf_custom_operators_cuda.so'
 else:
@@ -26,8 +25,9 @@ swap_pieces = custom_module.swap_pieces
 # measurement frequencies operator
 measure_frequencies = custom_module.measure_frequencies
 
+
 # apply_gate operator
-def apply_gate(state, gate, qubits, nqubits, target, omp_num_threads=get_threads()):
+def apply_gate(state, gate, qubits, nqubits, target, omp_num_threads):
     """Applies arbitrary one-qubit gate to a state vector.
 
     Modifies ``state`` in-place.
@@ -65,5 +65,6 @@ apply_fsim = custom_module.apply_fsim
 
 apply_swap = custom_module.apply_swap
 
-def collapse_state(state, qubits, result, nqubits, normalize=True, omp_num_threads=get_threads()):
+
+def collapse_state(state, qubits, result, nqubits, normalize, omp_num_threads):
     return custom_module.collapse_state(state, qubits, result, nqubits, normalize, omp_num_threads)
