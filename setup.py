@@ -31,7 +31,7 @@ class Build(_build_py):
         if os.name != 'nt':  # skip windows
             commands = [
                 ["make", "-j", "%s" % os.cpu_count(),
-                 "-C", "src/qibo_sim_tensorflow/custom_operators/"], ]
+                 "-C", "src/qibotf/custom_operators/"], ]
             for command in commands:
                 if subprocess.call(command) != 0:
                     sys.exit(-1)
