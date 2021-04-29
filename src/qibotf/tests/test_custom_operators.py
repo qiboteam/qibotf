@@ -5,7 +5,7 @@ import itertools
 import pytest
 import numpy as np
 import tensorflow as K
-from qibo_sim_tensorflow import custom_operators as op
+from qibotf import custom_operators as op
 
 
 gpu_devices = K.config.list_logical_devices("GPU")

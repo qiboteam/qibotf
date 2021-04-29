@@ -8,7 +8,7 @@ import os
 import re
 import sys
 
-PACKAGE = "qibo_sim_tensorflow"
+PACKAGE = "qibotf"
 
 
 # Returns the version
@@ -31,7 +31,7 @@ class Build(_build_py):
         if os.name != 'nt':  # skip windows
             commands = [
                 ["make", "-j", "%s" % os.cpu_count(),
-                 "-C", "src/qibo_sim_tensorflow/custom_operators/"], ]
+                 "-C", "src/qibotf/custom_operators/"], ]
             for command in commands:
                 if subprocess.call(command) != 0:
                     sys.exit(-1)
@@ -68,12 +68,12 @@ with open(os.path.join(this_directory, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
-    name="qibo-sim-tensorflow",
+    name=PACKAGE,
     version=get_version(),
     description="Simulation tools based on tensorflow.",
     author="Quantum-TII team",
     author_email="",
-    url="https://github.com/Quantum-TII/qibo-sim-tensorflow",
+    url="https://github.com/Quantum-TII/qibotf",
     packages=find_packages("src"),
     package_dir={"": "src"},
     cmdclass={"build_py": Build, "install": InstallPlatlib},

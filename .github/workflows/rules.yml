@@ -32,7 +32,7 @@ jobs:
         pylint src -E -d E1123,E1120
     - name: Test with pytest core
       run: |
-        pytest --cov=qibo_sim_tensorflow --cov-report=xml --pyargs qibo_sim_tensorflow
+        pytest --cov=qibotf --cov-report=xml --pyargs qibotf
     - name: Upload coverage to Codecov
       if: startsWith(matrix.os, 'ubuntu')
       uses: codecov/codecov-action@v1

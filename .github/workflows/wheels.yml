@@ -48,8 +48,8 @@ jobs:
         python -m pip install --upgrade pip
         pip install pytest
         pip install -r requirements.txt
-        pip install qibo-sim-tensorflow --no-index --find-links ./dist/
-        pytest --pyargs qibo_sim_tensorflow
+        pip install qibotf --no-index --find-links ./dist/
+        pytest --pyargs qibotf
   # TODO: UNCOMMENT AFTER FIRST RELEASE
   # deploy:
   #   runs-on: ubuntu-latest
