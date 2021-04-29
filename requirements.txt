@@ -1,4 +1,3 @@
-# Runtime requirements for qibo-sim-tensorflow
+# Runtime requirements for qibotf
 
-# numpy (included in tf)
 tensorflow==2.4.1

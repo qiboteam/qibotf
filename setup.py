@@ -8,7 +8,7 @@ import os
 import re
 import sys
 
-PACKAGE = "qibo_sim_tensorflow"
+PACKAGE = "qibotf"
 
 
 # Returns the version
@@ -68,12 +68,12 @@ with open(os.path.join(this_directory, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
-    name="qibo-sim-tensorflow",
+    name=PACKAGE,
     version=get_version(),
     description="Simulation tools based on tensorflow.",
     author="Quantum-TII team",
     author_email="",
-    url="https://github.com/Quantum-TII/qibo-sim-tensorflow",
+    url="https://github.com/Quantum-TII/qibotf",
     packages=find_packages("src"),
     package_dir={"": "src"},
     cmdclass={"build_py": Build, "install": InstallPlatlib},
