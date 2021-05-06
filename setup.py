@@ -71,7 +71,7 @@ setup(
     name=PACKAGE,
     version=get_version(),
     description="Simulation tools based on tensorflow.",
-    author="Quantum-TII team",
+    author="The Qibo team",
     author_email="",
     url="https://github.com/Quantum-TII/qibotf",
     packages=find_packages("src"),
