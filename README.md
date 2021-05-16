@@ -4,17 +4,20 @@
 [![codecov](https://codecov.io/gh/Quantum-TII/qibotf/branch/main/graph/badge.svg?token=0MRXUA7SZ0)](https://codecov.io/gh/Quantum-TII/qibotf)
 [![DOI](https://zenodo.org/badge/241307936.svg)](https://zenodo.org/badge/latestdoi/241307936)
 
-## Documentation
-
 This package provides acceleration features for [Qibo](https://github.com/Quantum-TII/qibo) using [TensorFlow](https://github.com/tensorflow/tensorflow) custom operators.
 
-Qibo documentation is available at [qibo.readthedocs.io](https://qibo.readthedocs.io).
+## Documentation
 
-- [Installation](https://qibo.readthedocs.io/en/stable/installation.html)
-- [Documentation](https://qibo.readthedocs.io/)
-- [Components](https://qibo.readthedocs.io/en/stable/qibo.html)
-- [Examples](https://qibo.readthedocs.io/en/stable/examples.html)
-- [Benchmarks](https://qibo.readthedocs.io/en/stable/benchmarks.html)
+The qibotf backend documentation is available at [qibo.readthedocs.io](https://qibo.readthedocs.io/en/stable/installation.html).
+
+## Support and requirements
+
+Here a compatibility matrix for the qibotf versions:
+
+| qibotf | tensorflow | OS Hardware                |
+|--------|------------|----------------------------|
+| 0.0.2  | 2.5.0      | linux (cpu/gpu), mac (cpu) |
+| 0.0.1  | 2.4.1      | linux (cpu/gpu), mac (cpu) |
 
 ## Citation policy
 
