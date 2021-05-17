@@ -20,13 +20,12 @@ except:
 
 
 # replace tensorflow placehold version in __init__.py
-with open('src/qibotf/__init__.py', 'r') as f:
+PLACEHOLDER = os.path.join("src", PACKAGE, "__init__.py.in")
+VERSIONFILE = os.path.join("src", PACKAGE, "__init__.py")
+with open(PLACEHOLDER, 'r') as f:
     content = f.read()
-    if content.find('TF_VERSION') < 0:
-        raise RuntimeError(
-            'TF_VERSION not found in src/qibotf/__init__.py, please reset file before installing.')
     content = content.replace('TF_VERSION', TF_VERSION)
-with open('src/qibotf/__init__.py', 'w') as f:
+with open(VERSIONFILE, 'w') as f:
     f.write(content)
 
 
@@ -34,7 +33,6 @@ with open('src/qibotf/__init__.py', 'w') as f:
 def get_version():
     """ Gets the version from the package's __init__ file
     if there is some problem, let it happily fail """
-    VERSIONFILE = os.path.join("src", PACKAGE, "__init__.py")
     initfile_lines = open(VERSIONFILE, "rt").readlines()
     VSRE = r"^__version__ = ['\"]([^'\"]*)['\"]"
     for line in initfile_lines:
