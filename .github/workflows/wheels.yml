@@ -20,6 +20,13 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Patch requirements
+      run: |
+        TFSTRING=`grep "tensorflow" requirements.txt`
+        TFVERSION=`echo $TFSTRING | cut -f2 -d "<" | cut -f2 -d "="`
+        # ugly sed because macos does not accept -i
+        sed "s/$TFSTRING/tensorflow==$TFVERSION/" requirements.txt > new_requirements.txt
+        mv new_requirements.txt requirements.txt
     - name: Install OS requirements
       uses: mstksg/get-package@v1
       with:
