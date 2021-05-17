@@ -11,6 +11,25 @@ import sys
 PACKAGE = "qibotf"
 
 
+# extract tensorflow version
+try:
+    import tensorflow as tf
+    TF_VERSION = tf.__version__
+except:
+    raise ModuleNotFoundError('Please install TensorFlow before qibotf.')
+
+
+# replace tensorflow placehold version in __init__.py
+with open('src/qibotf/__init__.py', 'r') as f:
+    content = f.read()
+    if content.find('TF_VERSION') < 0:
+        raise RuntimeError(
+            'TF_VERSION not found in src/qibotf/__init__.py, please reset file before installing.')
+    content = content.replace('TF_VERSION', TF_VERSION)
+with open('src/qibotf/__init__.py', 'w') as f:
+    f.write(content)
+
+
 # Returns the version
 def get_version():
     """ Gets the version from the package's __init__ file
@@ -22,7 +41,6 @@ def get_version():
         mo = re.search(VSRE, line, re.M)
         if mo:
             return mo.group(1)
-
 
 
 # Custom compilation step
