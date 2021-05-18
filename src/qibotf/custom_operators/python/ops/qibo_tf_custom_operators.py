@@ -1,5 +1,11 @@
 """Use ops in python."""
 import tensorflow as tf
+from qibotf import __target_tf_version__, __version__
+if tf.__version__ != __target_tf_version__:  # pragma: no cover
+    raise RuntimeError(
+        f"qibotf and TensorFlow versions do not match. "
+        "Please check the qibotf documentation.")
+
 from tensorflow.python.framework import load_library  # pylint: disable=no-name-in-module
 from tensorflow.python.platform import resource_loader  # pylint: disable=no-name-in-module
 
