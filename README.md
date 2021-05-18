@@ -14,10 +14,10 @@ The qibotf backend documentation is available at [qibo.readthedocs.io](https://q
 
 Here a compatibility matrix for the qibotf versions:
 
-| qibotf | tensorflow                       | OS Hardware                |
-|--------|----------------------------------|----------------------------|
-| 0.0.2  | 2.5.0 for pip (>=2.2 for source) | linux (cpu/gpu), mac (cpu) |
-| 0.0.1  | 2.4.1 for pip (>=2.2 for source) | linux (cpu/gpu), mac (cpu) |
+| qibotf | tensorflow                       | OS Hardware                             |
+|--------|----------------------------------|-----------------------------------------|
+| 0.0.2  | 2.5.0 for pip (>=2.2 for source) | linux cpu/gpu, mac cpu(pip)/gpu(source) |
+| 0.0.1  | 2.4.1 for pip (>=2.2 for source) | linux cpu/gpu, mac cpu(pip)/gpu(source) |
 
 ## Citation policy
 
