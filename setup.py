@@ -89,7 +89,7 @@ setup(
     description="Simulation tools based on tensorflow.",
     author="The Qibo team",
     author_email="",
-    url="https://github.com/Quantum-TII/qibotf",
+    url="https://github.com/qiboteam/qibotf",
     packages=find_packages("src"),
     package_dir={"": "src"},
     cmdclass={"build_py": Build, "install": InstallPlatlib},

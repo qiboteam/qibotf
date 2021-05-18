@@ -1,10 +1,10 @@
 # qibotf
 
-![Tests](https://github.com/Quantum-TII/qibotf/workflows/Tests/badge.svg)
-[![codecov](https://codecov.io/gh/Quantum-TII/qibotf/branch/main/graph/badge.svg?token=0MRXUA7SZ0)](https://codecov.io/gh/Quantum-TII/qibotf)
+![Tests](https://github.com/qiboteam/qibotf/workflows/Tests/badge.svg)
+[![codecov](https://codecov.io/gh/qiboteam/qibotf/branch/main/graph/badge.svg?token=0MRXUA7SZ0)](https://codecov.io/gh/qiboteam/qibotf)
 [![DOI](https://zenodo.org/badge/241307936.svg)](https://zenodo.org/badge/latestdoi/241307936)
 
-This package provides acceleration features for [Qibo](https://github.com/Quantum-TII/qibo) using [TensorFlow](https://github.com/tensorflow/tensorflow) custom operators.
+This package provides acceleration features for [Qibo](https://github.com/qiboteam/qibo) using [TensorFlow](https://github.com/tensorflow/tensorflow) custom operators.
 
 ## Documentation
 
