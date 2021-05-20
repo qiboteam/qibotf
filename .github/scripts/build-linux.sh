@@ -54,4 +54,4 @@ auditwheel repair wheelhouse/*.whl -w wheelhouse
 
 # move the wheel to dist/ folder
 mkdir -p dist
-mv wheelhouse/qibo*manylinux2010*.whl dist/
+mv wheelhouse/qibo*manylinux*.whl dist/
