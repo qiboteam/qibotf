@@ -29,14 +29,15 @@ else
     exit 1
 fi
 
-# install cuda-11.0
+# install cuda-11.2
 curl https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/cuda-repo-rhel7-10.2.89-1.x86_64.rpm -o cuda-repo.rpm
 rpm -i cuda-repo.rpm
-retry yum install -y cuda-compiler-11-0 cuda-libraries-devel-11-0
+retry yum install -y cuda-compiler-11-2 cuda-libraries-devel-11-2
 
 # set env variables
 export PYTHON=$PYBIN/python
-export CUDA_PATH=/usr/local/cuda-11.0/
+export CUDA_PATH=/usr/local/cuda-11.2/
+export LD_LIBRARY_PATH=/usr/local/cuda-11.2/lib64/:$LD_LIBRARY_PATH
 
 # build wheel
 retry $PYTHON -m pip install -r requirements.txt
@@ -53,4 +54,4 @@ auditwheel repair wheelhouse/*.whl -w wheelhouse
 
 # move the wheel to dist/ folder
 mkdir -p dist
-mv wheelhouse/qibo*manylinux2010*.whl dist/
+mv wheelhouse/qibo*manylinux*.whl dist/
