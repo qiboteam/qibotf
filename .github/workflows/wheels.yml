@@ -44,7 +44,8 @@ jobs:
         python setup.py bdist_wheel
         pip install delocate
         cd dist
-        delocate-wheel -v `ls`
+        delocate-listdeps `ls`
+        #delocate-wheel -v `ls`
     - name: Store wheels as artifacts
       uses: actions/upload-artifact@v2
       with:
