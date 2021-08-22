@@ -42,10 +42,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         python setup.py bdist_wheel
-        # Skip dependency delocation
-        # pip install delocate
-        # cd dist
-        # delocate-wheel -v `ls`
+        pip install delocate==0.8.0
+        cd dist
+        delocate-wheel -v `ls`
     - name: Store wheels as artifacts
       uses: actions/upload-artifact@v2
       with:
