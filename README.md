@@ -16,6 +16,7 @@ Here a compatibility matrix for the qibotf versions:
 
 | qibotf | ref. qibo | tensorflow                       | OS Hardware                             | CUDA |
 |--------|-----------|----------------------------------|-----------------------------------------|------|
+| 0.0.3  | >=0.1.6   | 2.6.0 for pip (>=2.2 for source) | linux cpu/gpu, mac cpu(pip)/gpu(source) | 11.2 |
 | 0.0.2  | >=0.1.6   | 2.5.0 for pip (>=2.2 for source) | linux cpu/gpu, mac cpu(pip)/gpu(source) | 11.2 |
 | 0.0.1  | >=0.1.6   | 2.4.1 for pip (>=2.2 for source) | linux cpu/gpu, mac cpu(pip)/gpu(source) | 11.0 |
 

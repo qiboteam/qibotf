@@ -42,7 +42,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         python setup.py bdist_wheel
-        pip install delocate
+        pip install delocate==0.8.0
         cd dist
         delocate-wheel -v `ls`
     - name: Store wheels as artifacts
