@@ -126,3 +126,16 @@ REGISTER_GATE1_NOMATRIX_OP("ApplyZ")
 REGISTER_GATE2_OP("ApplyTwoQubitGate")
 REGISTER_GATE2_OP("ApplyFsim")
 REGISTER_GATE2_NOMATRIX_OP("ApplySwap")
+
+
+// Register multi-qubit kernel
+REGISTER_OP("ApplyMultiQubitGate")      \
+    .Attr("T: {complex64, complex128}") \
+    .Input("state: T")                  \
+    .Input("gate: T")                   \
+    .Input("qubits: int32")             \
+    .Input("targets: int32")            \
+    .Attr("nqubits: int")               \
+    .Attr("omp_num_threads: int")       \
+    .Output("out: T")                   \
+    .SetShapeFn(::tensorflow::shape_inference::UnchangedShape);

@@ -10,5 +10,6 @@ from qibotf.custom_operators.python.ops.qibo_tf_custom_operators import apply_z_
 from qibotf.custom_operators.python.ops.qibo_tf_custom_operators import apply_two_qubit_gate
 from qibotf.custom_operators.python.ops.qibo_tf_custom_operators import apply_fsim
 from qibotf.custom_operators.python.ops.qibo_tf_custom_operators import apply_swap
+from qibotf.custom_operators.python.ops.qibo_tf_custom_operators import apply_multi_qubit_gate
 from qibotf.custom_operators.python.ops.qibo_tf_custom_operators import collapse_state
 from qibotf.custom_operators.python.ops.qibo_tf_custom_operators import measure_frequencies
