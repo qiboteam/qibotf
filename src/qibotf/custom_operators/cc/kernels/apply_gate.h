@@ -112,6 +112,14 @@ struct ApplyFsimFunctor : BaseTwoQubitGateFunctor<Device, T> {};
 template <typename Device, typename T>
 struct ApplySwapFunctor : BaseTwoQubitGateFunctor<Device, T> {};
 
+template <typename Device, typename T>
+struct ApplyMultiQubitGateFunctor {
+  void operator()(const OpKernelContext* context, const Device& d, T* state,
+                  int nqubits, int ntargets, int ncontrols,
+                  const int32* qubits, const int32* targets,
+                  const T* gate = NULL) const;
+};
+
 template <typename Device, typename T, typename NormType>
 struct CollapseStateFunctor {
   void operator()(OpKernelContext* context, const Device& d, T* state,

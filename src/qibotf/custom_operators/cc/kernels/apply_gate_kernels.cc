@@ -194,6 +194,53 @@ struct ApplySwapFunctor<CPUDevice, T> : BaseTwoQubitGateFunctor<CPUDevice, T> {
   }
 };
 
+
+template <typename T>
+struct ApplyMultiQubitGateFunctor<CPUDevice, T> {
+  void operator()(const OpKernelContext* context, const CPUDevice& d, T* state,
+                  int nqubits, int ntargets, int ncontrols,
+                  const int32* qubits, const int32* targets,
+                  const T* gate = NULL) const {
+    const int nactive = ncontrols + ntargets;
+    const int64 nstates = (int64)1 << (nqubits - nactive);
+    const int64 nsubstates = (int64)1 << ntargets;
+
+    #pragma omp parallel for
+    for (int64 g = 0; g < nstates; g += 1) {
+      int64 ig = g;
+      for (auto iq = 0; iq < nactive; iq++) {
+        const auto m = qubits[iq];
+        int64 k = (int64)1 << m;
+        ig = ((int64)((int64)ig >> m) << (m + 1)) + (ig & (k - 1)) + k;
+      }
+      std::vector<T> buffer;
+      for (auto i = 0; i < nsubstates; i++) {
+        int64 t = ig;
+        for (auto u = 0; u < ntargets; u++) {
+          t -= (int64)(((int64)((nsubstates - i - 1) >> u) & 1) << targets[u]);
+        }
+        buffer.push_back(state[t]);
+        int64 maxj = i + 1;
+        if (maxj > nsubstates) {
+          maxj = nsubstates;
+        }
+        state[t] = T(0, 0);
+        for (auto j = 0; j < maxj; j++) {
+          state[t] = cadd(state[t], cmult(gate[nsubstates * i + j], buffer[j]));
+        }
+        for (auto j = i + 1; j < nsubstates; j++) {
+          int64 s = ig;
+          for (auto u = 0; u < ntargets; u++) {
+            s -= (int64)(((int64)((nsubstates - j - 1) >> u) & 1) << targets[u]);
+          }
+          state[t] = cadd(state[t], cmult(gate[nsubstates * i + j], state[s]));
+        }
+      }
+    }
+  }
+};
+
+
 // Apply Collapse gate
 template <typename T, typename NormType>
 struct CollapseStateFunctor<CPUDevice, T, NormType> {
@@ -325,6 +372,40 @@ class TwoQubitGateOp : public OpKernel {
   int threads_;
 };
 
+template <typename Device, typename T>
+class MultiQubitGateOp : public OpKernel {
+ public:
+  explicit MultiQubitGateOp(OpKernelConstruction* context) : OpKernel(context) {
+    OP_REQUIRES_OK(context, context->GetAttr("nqubits", &nqubits_));
+    OP_REQUIRES_OK(context, context->GetAttr("omp_num_threads", &threads_));
+    omp_set_num_threads(threads_);
+  }
+
+  void Compute(OpKernelContext* context) override {
+    // grabe the input tensor
+    Tensor state = context->input(0);
+    const Tensor& gate = context->input(1);
+    const Tensor& qubits = context->input(2);
+    const Tensor& targets = context->input(3);
+
+    int ntargets = targets.flat<int32>().size();
+    int ncontrols = qubits.flat<int32>().size() - ntargets;
+
+    // call the implementation
+    ApplyMultiQubitGateFunctor<Device, T>()
+    (context, context->eigen_device<Device>(), state.flat<T>().data(),
+     nqubits_, ntargets, ncontrols,
+     qubits.flat<int32>().data(), targets.flat<int32>().data(),
+     gate.flat<T>().data());
+
+    context->set_output(0, state);
+  }
+
+ private:
+  int nqubits_;
+  int threads_;
+};
+
 template <typename Device, typename T, typename NormType>
 class CollapseStateOp : public OpKernel {
  public:
@@ -361,13 +442,19 @@ class CollapseStateOp : public OpKernel {
       Name(NAME).Device(DEVICE_CPU).TypeConstraint<T>("T"), \
       OP<CPUDevice, T, FUNCTOR<CPUDevice, T>, USEMATRIX>);
 
+// Register multi-qubit gate CPU kernel.
+#define REGISTER_MULTIQUBIT_CPU(T)                                           \
+  REGISTER_KERNEL_BUILDER(                                                   \
+      Name("ApplyMultiQubitGate").Device(DEVICE_CPU).TypeConstraint<T>("T"), \
+      MultiQubitGateOp<CPUDevice, T>);
+
 // Register Collapse state CPU kernel.
 #define REGISTER_COLLAPSE_CPU(T, NT)                                   \
   REGISTER_KERNEL_BUILDER(                                             \
       Name("CollapseState").Device(DEVICE_CPU).TypeConstraint<T>("T"), \
       CollapseStateOp<CPUDevice, T, NT>);
 
-// Register one-qubit gate kernels.
+
 #if GOOGLE_CUDA
 
 // Register the GPU kernels.
@@ -384,6 +471,7 @@ class CollapseStateOp : public OpKernel {
       Name("CollapseState").Device(DEVICE_GPU).TypeConstraint<T>("T"),  \
       CollapseStateOp<GPUDevice, T, NT>);
 
+// Register one-qubit gate kernels.
 #define REGISTER_ONEQUBIT(NAME, FUNCTOR, USEMATRIX)                   \
   REGISTER_CPU(complex64, NAME, OneQubitGateOp, FUNCTOR, USEMATRIX);  \
   REGISTER_CPU(complex128, NAME, OneQubitGateOp, FUNCTOR, USEMATRIX); \
@@ -396,6 +484,12 @@ class CollapseStateOp : public OpKernel {
   REGISTER_CPU(complex128, NAME, TwoQubitGateOp, FUNCTOR, USEMATRIX); \
   REGISTER_GPU(complex64, NAME, TwoQubitGateOp, FUNCTOR, USEMATRIX);  \
   REGISTER_GPU(complex128, NAME, TwoQubitGateOp, FUNCTOR, USEMATRIX);
+
+// Register multi-qubit gate kernels.
+// FIXME: Update this once the GPU kernel is defined
+#define REGISTER_MULTIQUBIT()           \
+  REGISTER_MULTIQUBIT_CPU(complex64);   \
+  REGISTER_MULTIQUBIT_CPU(complex128);
 
 #define REGISTER_COLLAPSE()                   \
   REGISTER_COLLAPSE_CPU(complex64, float);    \
@@ -414,6 +508,11 @@ class CollapseStateOp : public OpKernel {
   REGISTER_CPU(complex64, NAME, TwoQubitGateOp, FUNCTOR, USEMATRIX); \
   REGISTER_CPU(complex128, NAME, TwoQubitGateOp, FUNCTOR, USEMATRIX);
 
+// Register multi-qubit gate kernels.
+#define REGISTER_MULTIQUBIT()           \
+  REGISTER_MULTIQUBIT_CPU(complex64);   \
+  REGISTER_MULTIQUBIT_CPU(complex128);  \
+
 #define REGISTER_COLLAPSE()                    \
   REGISTER_COLLAPSE_CPU(complex64, float);     \
   REGISTER_COLLAPSE_CPU(complex128, double);
@@ -428,6 +527,7 @@ REGISTER_ONEQUBIT("ApplyZ", ApplyZFunctor, false);
 REGISTER_TWOQUBIT("ApplyTwoQubitGate", ApplyTwoQubitGateFunctor, true);
 REGISTER_TWOQUBIT("ApplyFsim", ApplyFsimFunctor, true);
 REGISTER_TWOQUBIT("ApplySwap", ApplySwapFunctor, false);
+REGISTER_MULTIQUBIT();
 REGISTER_COLLAPSE();
 }  // namespace functor
 }  // namespace tensorflow

@@ -72,5 +72,9 @@ apply_fsim = custom_module.apply_fsim
 apply_swap = custom_module.apply_swap
 
 
+def apply_multi_qubit_gate(state, gate, qubits, targets, nqubits, threads):
+    targets = tf.cast(tuple(nqubits - t - 1 for t in targets[::-1]), dtype="int32")
+    return custom_module.apply_multi_qubit_gate(state, gate, qubits, targets, nqubits, threads)
+
 def collapse_state(state, qubits, result, nqubits, normalize, omp_num_threads):
     return custom_module.collapse_state(state, qubits, result, nqubits, normalize, omp_num_threads)
