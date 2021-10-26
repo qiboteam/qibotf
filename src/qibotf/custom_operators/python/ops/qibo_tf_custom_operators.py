@@ -185,7 +185,7 @@ class TensorflowCustomBackend(TensorflowBackend, AbstractCustomOperators):
     def apply_fsim(self, state, gate, qubits, nqubits, targets):
         return self.module.apply_fsim(state, gate, qubits, nqubits, *targets, self.nthreads)
 
-    def apply_multiqubit_gate(self, state, gate, qubits, nqubits, targets):
+    def apply_multi_qubit_gate(self, state, gate, qubits, nqubits, targets):
         n = len(targets)
         raise_error(NotImplementedError,
                     "qibotf supports up to two-qubit gates but {} "

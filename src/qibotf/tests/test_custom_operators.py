@@ -288,6 +288,20 @@ def test_apply_swap_general(nqubits, targets, controls, compile, threads):
     K.assert_allclose(state, target_state.ravel())
 
 
+@pytest.mark.parametrize("nqubits,targets,controls", [(3, [0, 1, 2], [])])
+@pytest.mark.parametrize("compile", [False, True])
+def test_apply_swap_general(nqubits, targets, controls, compile, threads):
+    state = random_complex((2 ** nqubits,))
+    gate = random_complex((8, 8))
+    def apply_operator(state):
+        qubits = qubits_tensor(nqubits, targets, controls)
+        return K.apply_multi_qubit_gate(state, gate, qubits, nqubits, targets)
+    if compile:
+        apply_operator = K.compile(apply_operator)
+    with pytest.raises(NotImplementedError):
+        final_state = apply_operator(state)
+
+
 @pytest.mark.parametrize("nqubits,targets,results",
                          [(2, [0], [1]), (2, [1], [0]), (3, [1], [1]),
                           (4, [1, 3], [1, 0]), (5, [1, 2, 4], [0, 1, 1]),
