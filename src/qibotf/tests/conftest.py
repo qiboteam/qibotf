@@ -24,3 +24,5 @@ def pytest_generate_tests(metafunc):
         metafunc.parametrize("precision_name", ["double", "single"])
     if "num_threads" in metafunc.fixturenames:
         metafunc.parametrize("num_threads", [1, 4])
+    if "density_matrix" in metafunc.fixturenames:
+        metafunc.parametrize("density_matrix", [False, True])
