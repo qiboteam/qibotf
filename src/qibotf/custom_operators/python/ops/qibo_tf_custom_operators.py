@@ -1,6 +1,7 @@
 """Qibo backend that applies the Tensorflow custom operators."""
 import os
 import tensorflow as tf
+import qibo
 from qibo.backends.abstract import AbstractBackend, AbstractCustomOperators
 from qibo.backends.tensorflow import TensorflowBackend
 from qibo.config import raise_error
@@ -22,9 +23,14 @@ class TensorflowCustomBackend(TensorflowBackend, AbstractCustomOperators):
         # check if qibotf and tf versions are compatible
         from qibotf import __target_tf_version__
         if tf.__version__ != __target_tf_version__:  # pragma: no cover
-            raise RuntimeError(
-                f"qibotf and TensorFlow versions do not match. "
-                "Please check the qibotf documentation.")
+            raise_error(RuntimeError,
+                        "qibotf and TensorFlow versions do not match. "
+                        "Please check the qibotf documentation.")
+        # check if qibotf and qibo versions are compatible
+        if qibo.__version__ < 0.1.7:
+            raise_error(RuntimeError,
+                        "qibotf requires qibo version higher than 0.1.7. "
+                        "Please upgrade qibo or downgrade qibotf.")
 
         # load custom operators
         from tensorflow.python.framework import load_library  # pylint: disable=no-name-in-module
