@@ -1,13 +1,32 @@
-"""Test Tensorflow custom operators."""
-import itertools
+"""Test Tensorflow custom operators.
+
+Tests should be independent of qibo for the GitHub CI to pass.
+"""
+import os
+import pathlib
 import pytest
+import itertools
 import numpy as np
 import tensorflow as K
-from qibotf import custom_operators as op
+from tensorflow.python.framework import load_library  # pylint: disable=no-name-in-module
+from tensorflow.python.platform import resource_loader  # pylint: disable=no-name-in-module
 
 
 gpu_devices = K.config.list_logical_devices("GPU")
 _atol = 1e-6
+
+
+# load custom operators
+library_path = pathlib.Path(__file__).parent.parent
+if gpu_devices:  # pragma: no cover
+    # case not covered by GitHub workflows because it requires GPU
+    library_name = '_qibo_tf_custom_operators_cuda.so'
+else:
+    library_name = '_qibo_tf_custom_operators.so'
+
+library_path = os.path.join(library_path, "custom_operators", "python",
+                            "ops", library_name)
+op = load_library.load_op_library(library_path)
 
 
 def qubits_tensor(nqubits, targets, controls=[]):
