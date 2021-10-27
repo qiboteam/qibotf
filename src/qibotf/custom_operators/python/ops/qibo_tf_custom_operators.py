@@ -63,7 +63,7 @@ class TensorflowCustomBackend(TensorflowBackend, AbstractCustomOperators):  # pr
                                          omp_num_threads=self.nthreads)
 
     def sample_frequencies(self, probs, nshots):
-        from qibo.config import SHOT_METROPOLIS_THRESHOLD
+        from qibo.config import SHOT_METROPOLIS_THRESHOLD # pylint: disable=E0401
         if nshots < SHOT_METROPOLIS_THRESHOLD:
             return super().sample_frequencies(probs, nshots)
         # Generate random seed using tf
