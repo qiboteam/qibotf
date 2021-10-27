@@ -27,7 +27,7 @@ class TensorflowCustomBackend(TensorflowBackend, AbstractCustomOperators):
                         "qibotf and TensorFlow versions do not match. "
                         "Please check the qibotf documentation.")
         # check if qibotf and qibo versions are compatible
-        if qibo.__version__ < 0.1.7:
+        if qibo.__version__ < "0.1.7":
             raise_error(RuntimeError,
                         "qibotf requires qibo version higher than 0.1.7. "
                         "Please upgrade qibo or downgrade qibotf.")
