@@ -7,7 +7,9 @@ from qibo.backends.tensorflow import TensorflowBackend
 from qibo.config import raise_error
 
 
-class TensorflowCustomBackend(TensorflowBackend, AbstractCustomOperators):
+class TensorflowCustomBackend(TensorflowBackend, AbstractCustomOperators):  # pragma: no cover
+    # This class is tested in qibo tests, not qibotf, so that qibotf CI
+    # can pass without having to release latest qibo
 
     description = "Uses precompiled primitives to apply gates to states. " \
                   "This is the fastest simulation engine."
@@ -17,12 +19,12 @@ class TensorflowCustomBackend(TensorflowBackend, AbstractCustomOperators):
         AbstractCustomOperators.__init__(self)
         self.name = "qibotf"
         self.is_custom = True
-        if "OMP_NUM_THREADS" in os.environ: # pragma: no cover
+        if "OMP_NUM_THREADS" in os.environ:
             self.set_threads(int(os.environ.get("OMP_NUM_THREADS")))
 
         # check if qibotf and tf versions are compatible
         from qibotf import __target_tf_version__
-        if tf.__version__ != __target_tf_version__:  # pragma: no cover
+        if tf.__version__ != __target_tf_version__:
             raise_error(RuntimeError,
                         "qibotf and TensorFlow versions do not match. "
                         "Please check the qibotf documentation.")
@@ -35,7 +37,7 @@ class TensorflowCustomBackend(TensorflowBackend, AbstractCustomOperators):
         # load custom operators
         from tensorflow.python.framework import load_library  # pylint: disable=no-name-in-module
         from tensorflow.python.platform import resource_loader  # pylint: disable=no-name-in-module
-        if tf.config.list_physical_devices("GPU"):  # pragma: no cover
+        if tf.config.list_physical_devices("GPU"):
             # case not covered by GitHub workflows because it requires GPU
             library_path = '_qibo_tf_custom_operators_cuda.so'
         else:
@@ -75,10 +77,10 @@ class TensorflowCustomBackend(TensorflowBackend, AbstractCustomOperators):
             frequencies, probs, nshots, nqubits, seed, self.nthreads)
         return frequencies
 
-    def create_einsum_cache(self, qubits, nqubits, ncontrol=None): # pragma: no cover
+    def create_einsum_cache(self, qubits, nqubits, ncontrol=None):
         raise_error(NotImplementedError)
 
-    def einsum_call(self, cache, state, matrix): # pragma: no cover
+    def einsum_call(self, cache, state, matrix):
         raise_error(NotImplementedError)
 
     def create_gate_cache(self, gate):
