@@ -124,7 +124,7 @@ def test_apply_gate_controlled(nqubits, target, controls, compile, einsum_str, t
     state = random_complex((2 ** nqubits,))
     gate = random_complex((2, 2))
 
-    target_state = state.numpy().reshape(nqubits * (2,))
+    target_state = np.reshape(state.numpy(), nqubits * (2,))
     slicer = nqubits * [slice(None)]
     for c in controls:
         slicer[c] = 1
@@ -139,7 +139,7 @@ def test_apply_gate_controlled(nqubits, target, controls, compile, einsum_str, t
         apply_operator = tf.function(apply_operator)
 
     state = apply_operator(state)
-    np.testing.assert_allclose(target_state, state.numpy())
+    np.testing.assert_allclose(state, target_state)
 
 
 @pytest.mark.parametrize(("nqubits", "target", "gate"),
@@ -164,8 +164,7 @@ def test_apply_pauli_gate(nqubits, target, gate, compile, threads):
     if compile:
         apply_operator = tf.function(apply_operator)
     state = apply_operator(state)
-
-    np.testing.assert_allclose(target_state.numpy(), state.numpy())
+    np.testing.assert_allclose(state, target_state)
 
 
 @pytest.mark.parametrize(("nqubits", "target", "controls"),
@@ -187,7 +186,7 @@ def test_apply_zpow_gate(nqubits, target, controls, compile, threads):
 
     state = random_complex((2 ** nqubits,))
 
-    target_state = np.diag(matrix).dot(state.numpy())
+    target_state = np.diag(matrix).dot(state)
 
     def apply_operator(state):
         qubits = qubits_tensor(nqubits, [target], controls)
@@ -195,8 +194,7 @@ def test_apply_zpow_gate(nqubits, target, controls, compile, threads):
     if compile:
         apply_operator = tf.function(apply_operator)
     state = apply_operator(state)
-
-    np.testing.assert_allclose(target_state, state.numpy())
+    np.testing.assert_allclose(state, target_state)
 
 
 @pytest.mark.parametrize(("nqubits", "targets", "controls",
@@ -232,7 +230,7 @@ def test_apply_twoqubit_gate_controlled(nqubits, targets, controls,
         apply_operator = tf.function(apply_operator)
 
     state = apply_operator(state)
-    np.testing.assert_allclose(target_state, state.numpy())
+    np.testing.assert_allclose(state, target_state)
 
 
 @pytest.mark.parametrize(("nqubits", "targets", "controls",
@@ -277,7 +275,7 @@ def test_apply_fsim(nqubits, targets, controls, compile, einsum_str, threads):
         apply_operator = tf.function(apply_operator)
 
     state = apply_operator(state)
-    np.testing.assert_allclose(target_state, state.numpy())
+    np.testing.assert_allclose(state, target_state)
 
 
 @pytest.mark.parametrize("compile", [False, True])
@@ -289,7 +287,7 @@ def test_apply_swap_with_matrix(compile, threads):
                        [0, 0, 1, 0],
                        [0, 1, 0, 0],
                        [0, 0, 0, 1]])
-    target_state = matrix.dot(state.numpy())
+    target_state = matrix.dot(state)
 
     def apply_operator(state):
         qubits = qubits_tensor(2, [0, 1])
@@ -297,7 +295,7 @@ def test_apply_swap_with_matrix(compile, threads):
     if compile:
         apply_operator = tf.function(apply_operator)
     state = apply_operator(state)
-    np.testing.assert_allclose(target_state, state.numpy())
+    np.testing.assert_allclose(state, target_state)
 
 
 @pytest.mark.parametrize(("nqubits", "targets", "controls"),
@@ -331,7 +329,7 @@ def test_apply_swap_general(nqubits, targets, controls, compile, threads):
     if compile:
         apply_operator = tf.function(apply_operator)
     state = apply_operator(state)
-    np.testing.assert_allclose(target_state.ravel(), state.numpy())
+    np.testing.assert_allclose(state, target_state.ravel())
 
 
 @pytest.mark.parametrize("nqubits,targets,results",
@@ -380,9 +378,9 @@ def test_custom_op_toy_callback(gate, compile, threads):
                                  [0, 1, 0, 0], [0, 0, 0, 1]])
 
     target_state = state.numpy()
-    target_c1 = mask.numpy().dot(target_state)
+    target_c1 = np.dot(mask, target_state)
     target_state = matrices[gate].dot(target_state)
-    target_c2 = mask.numpy().dot(target_state)
+    target_c2 = np.dot(mask, target_state)
     assert target_c1 != target_c2
     target_callback = [target_c1, target_c2]
 
@@ -408,9 +406,8 @@ def test_custom_op_toy_callback(gate, compile, threads):
         # case not tested because it fails
         apply_operator = tf.function(apply_operator)
     state, callback = apply_operator(state)
-
-    np.testing.assert_allclose(target_state, state.numpy())
-    np.testing.assert_allclose(target_callback, callback.numpy())
+    np.testing.assert_allclose(state, target_state)
+    np.testing.assert_allclose(callback, target_callback)
 
 
 def check_unimplemented_error(func, *args):  # pragma: no cover
@@ -446,14 +443,14 @@ def test_transpose_state(nqubits, ndevices, threads):
         else:
             new_state = op.transpose_state(
                 pieces, new_state, nqubits, qubit_order, threads)
-            np.testing.assert_allclose(target_state, new_state.numpy())
+            np.testing.assert_allclose(new_state, target_state)
 
 
 @pytest.mark.parametrize("nqubits", [4, 5, 7, 8, 9, 10])
 @pytest.mark.parametrize("threads", [1, 4])
 def test_swap_pieces_zero_global(nqubits, threads):
     state = random_complex((2 ** nqubits,))
-    target_state = tf.cast(np.copy(state.numpy()), dtype=np.complex128)
+    target_state = tf.cast(np.copy(state), dtype=np.complex128)
     shape = (2, int(state.shape[0]) // 2)
     state = tf.reshape(state, shape)
 
@@ -473,15 +470,15 @@ def test_swap_pieces_zero_global(nqubits, threads):
         else:
             op.swap_pieces(piece0, piece1, local - 1,
                            nqubits - 1, threads)
-            np.testing.assert_allclose(target_state[0], piece0.numpy())
-            np.testing.assert_allclose(target_state[1], piece1.numpy())
+            np.testing.assert_allclose(piece0, target_state[0])
+            np.testing.assert_allclose(piece1, target_state[1])
 
 
 @pytest.mark.parametrize("nqubits", [5, 7, 8, 9, 10])
 @pytest.mark.parametrize("threads", [1, 4])
 def test_swap_pieces(nqubits, threads):
     state = random_complex((2 ** nqubits,))
-    target_state = tf.cast(np.copy(state.numpy()), dtype=state.dtype)
+    target_state = tf.cast(np.copy(state), dtype=state.dtype)
     shape = (2, int(state.shape[0]) // 2)
 
     for _ in range(10):
@@ -512,8 +509,8 @@ def test_swap_pieces(nqubits, threads):
             op.swap_pieces(piece0, piece1,
                            local_qubit - int(global_qubit < local_qubit),
                            nqubits - 1, threads)
-            np.testing.assert_allclose(target_state[0], piece0.numpy())
-            np.testing.assert_allclose(target_state[1], piece1.numpy())
+            np.testing.assert_allclose(piece0, target_state[0])
+            np.testing.assert_allclose(piece1, target_state[1])
 
 
 @pytest.mark.parametrize("dtype", [np.float32, np.float64])
