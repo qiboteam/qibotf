@@ -74,6 +74,10 @@ class InstallPlatlib(install):
         self.install_lib = self.install_platlib
 
 
+# Read in requirements
+requirements = open('requirements.txt').readlines()
+requirements = [r.strip() for r in requirements]
+
 # load long description from README
 this_directory = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(this_directory, "README.md"), encoding="utf-8") as f:
@@ -97,10 +101,7 @@ setup(
         "Programming Language :: Python :: 3",
         "Topic :: Scientific/Engineering :: Physics",
     ],
-    install_requires=[
-        "tensorflow>=2.2,<=2.6.0",
-        "qibo>=0.1.7"
-    ],
+    install_requires=requirements,
     python_requires=">=3.6.0",
     long_description=long_description,
     long_description_content_type='text/markdown',
