@@ -1,10 +1,10 @@
 """Qibo backend that applies the Tensorflow custom operators."""
 import os
 import tensorflow as tf
-import qibo
-from qibo.backends.abstract import AbstractBackend, AbstractCustomOperators
-from qibo.backends.tensorflow import TensorflowBackend
-from qibo.config import raise_error
+import qibo # pylint: disable=E0401
+from qibo.backends.abstract import AbstractBackend, AbstractCustomOperators # pylint: disable=E0401
+from qibo.backends.tensorflow import TensorflowBackend # pylint: disable=E0401
+from qibo.config import raise_error # pylint: disable=E0401
 
 
 class TensorflowCustomBackend(TensorflowBackend, AbstractCustomOperators):  # pragma: no cover
