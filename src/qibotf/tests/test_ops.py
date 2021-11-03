@@ -198,18 +198,15 @@ NONZERO = list(itertools.combinations(range(8), r=1))
 NONZERO.extend(itertools.combinations(range(8), r=2))
 NONZERO.extend(itertools.combinations(range(8), r=3))
 NONZERO.extend(itertools.combinations(range(8), r=4))
-@pytest.mark.parametrize("nonzero", NONZERO)
-def test_measure_frequencies_sparse_probabilities(nonzero):
-    import sys
+NSHOTS = (len(NONZERO) // 2 + 1) * [1000, 200000]
+@pytest.mark.parametrize("nonzero,nshots", zip(NONZERO, NSHOTS))
+def test_sample_frequencies_sparse_probabilities(nonzero, nshots):
     probs = np.zeros(8, dtype="float64")
     for i in nonzero:
         probs[i] = 1
     probs = probs / np.sum(probs)
-    frequencies = np.zeros(8, dtype="int64")
-    frequencies = K.module.measure_frequencies(frequencies, probs, nshots=1000,
-                                               nqubits=3, omp_num_threads=1,
-                                               seed=1234)
-    assert np.sum(frequencies) == 1000
+    frequencies = K.sample_frequencies(probs, nshots)
+    assert np.sum(frequencies) == nshots
     for i, freq in enumerate(frequencies):
         if i in nonzero:
             assert freq != 0

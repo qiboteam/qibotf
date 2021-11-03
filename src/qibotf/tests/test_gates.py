@@ -116,7 +116,8 @@ def test_apply_pauli_gate(nqubits, target, gate, compile, nthreads):
     def apply_operator(state):
         qubits = qubits_tensor(nqubits, [target])
         return getattr(K, "apply_{}".format(gate))(state, qubits, nqubits, (target,))
-        apply_operator = K.compile(apply_operator)
+
+    apply_operator = K.compile(apply_operator)
     state = apply_operator(state)
     K.assert_allclose(state, target_state)
 
@@ -281,6 +282,15 @@ def test_apply_swap_general(nqubits, targets, controls, compile, threads):
         apply_operator = K.compile(apply_operator)
     state = apply_operator(state)
     K.assert_allclose(state, target_state.ravel())
+
+
+def test_multi_qubit_gate():
+    state = random_complex((8,))
+    gate = random_complex((8, 8))
+    targets = (0, 1, 2)
+    qubits = qubits_tensor(3, targets)
+    with pytest.raises(NotImplementedError):
+        state = K.apply_multi_qubit_gate(state, gate, qubits, 3, targets)
 
 
 # this test fails when compiling due to in-place updates of the state
