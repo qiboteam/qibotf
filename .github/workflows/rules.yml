@@ -31,9 +31,6 @@ jobs:
         python setup.py develop
         cd ..
         pip install .
-    - name: Test with pylint
-      run: |
-        pylint src -E -d E1123,E1120
     - name: Test with pytest core
       run: |
         pytest --cov=qibotf --cov-report=xml --pyargs qibotf
