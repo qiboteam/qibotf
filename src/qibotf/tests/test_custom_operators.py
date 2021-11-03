@@ -33,7 +33,7 @@ def test_initial_state(compile, nthreads):
 
     func = apply_operator
     if compile:
-        func = tf.function(apply_operator)
+        func = K.compile(apply_operator)
     final_state = func()
     exact_state = np.array([1] + [0]*15)
     K.assert_allclose(final_state, exact_state)
@@ -59,7 +59,7 @@ def test_apply_gate(nqubits, target, dtype, compile, einsum_str, nthreads):
     target_state = target_state.numpy().ravel()
 
     if compile:
-        apply_operator = tf.function(apply_operator)
+        apply_operator = K.compile(apply_operator)
     state = apply_operator(state, gate)
     K.assert_allclose(target_state, state, atol=_atol)
 
@@ -83,7 +83,7 @@ def test_apply_gate_cx(nqubits, compile, nthreads):
         qubits = qubits_tensor(nqubits, [nqubits - 1], controls)
         return K.apply_gate(state, xgate, qubits, nqubits, (nqubits - 1,))
     if compile:
-        apply_operator = tf.function(apply_operator)
+        apply_operator = K.compile(apply_operator)
     state = apply_operator(state)
     K.assert_allclose(target_state, state)
 
@@ -112,7 +112,7 @@ def test_apply_gate_controlled(nqubits, target, controls, compile, einsum_str, n
         qubits = qubits_tensor(nqubits, [target], controls)
         return K.apply_gate(state, gate, qubits, nqubits, (target,))
     if compile:
-        apply_operator = tf.function(apply_operator)
+        apply_operator = K.compile(apply_operator)
 
     state = apply_operator(state)
     K.assert_allclose(state, target_state)
@@ -135,7 +135,7 @@ def test_apply_pauli_gate(nqubits, target, gate, compile, nthreads):
     def apply_operator(state):
         qubits = qubits_tensor(nqubits, [target])
         return getattr(K, "apply_{}".format(gate))(state, qubits, nqubits, (target,))
-        apply_operator = tf.function(apply_operator)
+        apply_operator = K.compile(apply_operator)
     state = apply_operator(state)
     K.assert_allclose(state, target_state)
 
@@ -165,7 +165,7 @@ def test_apply_zpow_gate(nqubits, target, controls, compile, threads):
         qubits = qubits_tensor(nqubits, [target], controls)
         return K.apply_z_pow(state, phase, qubits, nqubits, (target,))
     if compile:
-        apply_operator = tf.function(apply_operator)
+        apply_operator = K.compile(apply_operator)
     state = apply_operator(state)
     K.assert_allclose(state, target_state)
 
@@ -200,7 +200,7 @@ def test_apply_twoqubit_gate_controlled(nqubits, targets, controls,
         qubits = qubits_tensor(nqubits, targets, controls)
         return K.apply_two_qubit_gate(state, gate, qubits, nqubits, targets)
     if compile:
-        apply_operator = tf.function(apply_operator)
+        apply_operator = K.compile(apply_operator)
 
     state = apply_operator(state)
     K.assert_allclose(state, target_state)
@@ -244,7 +244,7 @@ def test_apply_fsim(nqubits, targets, controls, compile, einsum_str, nthreads):
         qubits = qubits_tensor(nqubits, targets, controls)
         return K.apply_fsim(state, gate, qubits, nqubits, targets)
     if compile:
-        apply_operator = tf.function(apply_operator)
+        apply_operator = K.compile(apply_operator)
 
     state = apply_operator(state)
     K.assert_allclose(state, target_state)
@@ -264,7 +264,7 @@ def test_apply_swap_with_matrix(compile, nthreads):
         qubits = qubits_tensor(2, [0, 1])
         return K.apply_swap(state, qubits, 2, (0, 1))
     if compile:
-        apply_operator = tf.function(apply_operator)
+        apply_operator = K.compile(apply_operator)
     state = apply_operator(state)
     K.assert_allclose(state, target_state)
 
@@ -298,7 +298,7 @@ def test_apply_swap_general(nqubits, targets, controls, compile, threads):
         qubits = qubits_tensor(nqubits, targets, controls)
         return K.apply_swap(state, qubits, nqubits, targets)
     if compile:
-        apply_operator = tf.function(apply_operator)
+        apply_operator = K.compile(apply_operator)
     state = apply_operator(state)
     K.assert_allclose(state, target_state.ravel())
 
@@ -372,7 +372,7 @@ def test_custom_op_toy_callback(gate, compile, nthreads):
         return state0, tf.stack([c1, c2])
     if compile:  # pragma: no cover
         # case not tested because it fails
-        apply_operator = tf.function(apply_operator)
+        apply_operator = K.compile(apply_operator)
     state, callback = apply_operator(state)
     K.assert_allclose(state, target_state)
     K.assert_allclose(callback, target_callback)
