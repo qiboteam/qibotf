@@ -60,6 +60,37 @@ def test_collapse_state(nqubits, targets, results, dtype, nthreads):
     K.assert_allclose(state, target_state, atol=atol)
 
 
+@pytest.mark.parametrize("gatename", ["H", "X", "Z"])
+@pytest.mark.parametrize("density_matrix", [False, True])
+def test_collapse_call(backend, gatename, density_matrix):
+    from qibo import gates
+    if density_matrix:
+        state = random_complex((8, 8))
+        state = state + np.conj(state.T)
+    else:
+        state = random_state(3)
+
+    result = [0, 0]
+    qibo.set_backend("numpy")
+    gate = gates.M(0, 1)
+    gate.nqubits = 3
+    if density_matrix:
+        gate.density_matrix = density_matrix
+        target_state = K.density_matrix_collapse(gate, K.copy(state), result)
+    else:
+        target_state = K.state_vector_collapse(gate, K.copy(state), result)
+
+    qibo.set_backend("qibotf")
+    gate = gates.M(0, 1)
+    gate.nqubits = 3
+    if density_matrix:
+        gate.density_matrix = density_matrix
+        final_state = K.density_matrix_collapse(gate, K.copy(state), result)
+    else:
+        final_state = K.state_vector_collapse(gate, K.copy(state), result)
+    K.assert_allclose(final_state, target_state)
+
+
 def check_unimplemented_error(func, *args):  # pragma: no cover
     # method not tested by GitHub workflows because it requires GPU
     from tensorflow.python.framework import errors_impl  # pylint: disable=no-name-in-module
