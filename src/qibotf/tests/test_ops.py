@@ -62,13 +62,14 @@ def test_collapse_state(nqubits, targets, results, dtype, nthreads):
 
 @pytest.mark.parametrize("gatename", ["H", "X", "Z"])
 @pytest.mark.parametrize("density_matrix", [False, True])
-def test_collapse_call(backend, gatename, density_matrix):
+def test_collapse_call(gatename, density_matrix):
     from qibo import gates
     if density_matrix:
-        state = random_complex((8, 8))
+        state = np.random.random((8, 8)) + 1j * np.random.random((8, 8))
         state = state + np.conj(state.T)
     else:
-        state = random_state(3)
+        state = np.random.random(8) + 1j * np.random.random(8)
+        state = state / np.sqrt(np.sum(np.abs(state) ** 2))
 
     result = [0, 0]
     qibo.set_backend("numpy")
@@ -91,14 +92,6 @@ def test_collapse_call(backend, gatename, density_matrix):
     K.assert_allclose(final_state, target_state)
 
 
-def check_unimplemented_error(func, *args):  # pragma: no cover
-    # method not tested by GitHub workflows because it requires GPU
-    from tensorflow.python.framework import errors_impl  # pylint: disable=no-name-in-module
-    error = errors_impl.UnimplementedError
-    with pytest.raises(error):
-        func(*args)
-
-
 @pytest.mark.parametrize("nqubits", [3, 4, 7, 8, 9, 10])
 @pytest.mark.parametrize("ndevices", [2, 4, 8])
 def test_transpose_state(nqubits, ndevices, nthreads):
@@ -118,8 +111,9 @@ def test_transpose_state(nqubits, ndevices, nthreads):
         pieces = [state[i] for i in range(ndevices)]
         if "GPU" in K.default_device:  # pragma: no cover
             # case not tested by GitHub workflows because it requires GPU
-            check_unimplemented_error(K.transpose_state,
-                                      pieces, new_state, nqubits, qubit_order)
+            from tensorflow.python.framework import errors_impl  # pylint: disable=no-name-in-module
+            with pytest.raises(errors_impl.UnimplementedError):
+                K.transpose_state(pieces, new_state, nqubits, qubit_order)
         else:
             new_state = K.transpose_state(
                 pieces, new_state, nqubits, qubit_order)

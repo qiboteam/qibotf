@@ -356,8 +356,9 @@ def test_gates_on_circuit(gatename, density_matrix):
 
 
 @pytest.mark.parametrize("gatename", ["H", "X", "Z"])
-def test_density_matrix_half_calls(backend, gatename):
-    state = random_complex((8, 8))
+def test_density_matrix_half_calls(gatename):
+    from qibo import gates
+    state = np.random.random((8, 8)) + 1j * np.random.random((8, 8))
     state = state + np.conj(state.T)
     qibo.set_backend("numpy")
     gate = getattr(gates, gatename)(1)
