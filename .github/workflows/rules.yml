@@ -23,15 +23,13 @@ jobs:
     - name: Install package
       run: |
         python -m pip install --upgrade pip
+        pip install pytest-cov pylint
         pip install -r requirements.txt
-        pip install --upgrade pylint
-        pip install --upgrade pytest-cov
         git clone https://github.com/qiboteam/qibo
         cd qibo
         git checkout rmbackends
         python setup.py develop
         cd ..
-        pip install --upgrade typing-extensions
         pip install .
     - name: Test with pylint
       run: |
