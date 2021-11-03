@@ -19,12 +19,12 @@ def random_complex(shape, dtype="complex128"):
     return tf.cast(x, dtype=dtype)
 
 
-@pytest.mark.parametrize(("nqubits", "target", "dtype", "compile", "einsum_str"),
-                         [(5, 4, np.complex64, False, "abcde,Ee->abcdE"),
-                          (4, 2, np.complex64, True, "abcd,Cc->abCd"),
-                          (4, 2, np.complex128, False, "abcd,Cc->abCd"),
-                          (3, 0, np.complex128, True, "abc,Aa->Abc"),
-                          (8, 5, np.complex128, False, "abcdefgh,Ff->abcdeFgh")])
+@pytest.mark.parametrize(("nqubits", "target", "compile", "einsum_str"),
+                         [(5, 4, False, "abcde,Ee->abcdE"),
+                          (4, 2, True, "abcd,Cc->abCd"),
+                          (4, 2, False, "abcd,Cc->abCd"),
+                          (3, 0, True, "abc,Aa->Abc"),
+                          (8, 5, False, "abcdefgh,Ff->abcdeFgh")])
 def test_apply_gate(nqubits, target, dtype, compile, einsum_str, nthreads):
     """Check that ``apply_gate`` agrees with einsum gate implementation."""
     def apply_operator(state, gate):
@@ -41,7 +41,7 @@ def test_apply_gate(nqubits, target, dtype, compile, einsum_str, nthreads):
     if compile:
         apply_operator = K.compile(apply_operator)
     state = apply_operator(state, gate)
-    atol = 1e-6 if dtype == np.complex64 else 1e-10
+    atol = 1e-6 if dtype == "complex64" else 1e-10
     K.assert_allclose(target_state, state, atol=atol)
 
 
@@ -105,9 +105,9 @@ def test_apply_gate_controlled(nqubits, target, controls, compile, einsum_str, n
 @pytest.mark.parametrize("compile", [False, True])
 def test_apply_pauli_gate(nqubits, target, gate, compile, nthreads):
     """Check ``apply_x``, ``apply_y`` and ``apply_z`` kernels."""
-    matrices = {"x": np.array([[0, 1], [1, 0]], dtype=np.complex128),
-                "y": np.array([[0, -1j], [1j, 0]], dtype=np.complex128),
-                "z": np.array([[1, 0], [0, -1]], dtype=np.complex128)}
+    matrices = {"x": np.array([[0, 1], [1, 0]], dtype="complex128"),
+                "y": np.array([[0, -1j], [1j, 0]], dtype="complex128"),
+                "z": np.array([[1, 0], [0, -1]], dtype="complex128")}
     state = random_complex((2 ** nqubits,))
     target_state = tf.cast(state, dtype=state.dtype)
     qubits = qubits_tensor(nqubits, [target])
@@ -133,7 +133,7 @@ def test_apply_zpow_gate(nqubits, target, controls, compile, threads):
     qubits = controls[:]
     qubits.append(target)
     qubits.sort()
-    matrix = np.ones(2 ** nqubits, dtype=np.complex128)
+    matrix = np.ones(2 ** nqubits, dtype="complex128")
     for i, conf in enumerate(itertools.product([0, 1], repeat=nqubits)):
         if np.array(conf)[qubits].prod():
             matrix[i] = phase
@@ -161,9 +161,8 @@ def test_apply_zpow_gate(nqubits, target, controls, compile, threads):
                           (5, [1, 4], [2], False, "abcd,BDbd->aBcD"),
                           (6, [1, 3], [0, 4], True, "abcd,ACac->AbCd"),
                           (6, [0, 5], [1, 2, 3], False, "abc,ACac->AbC")])
-@pytest.mark.parametrize("threads", [1, 4])
 def test_apply_twoqubit_gate_controlled(nqubits, targets, controls,
-                                        compile, einsum_str, threads):
+                                        compile, einsum_str, nthreads):
     """Check ``apply_twoqubit_gate`` for random gates."""
     state = random_complex((2 ** nqubits,))
     gate = random_complex((4, 4))

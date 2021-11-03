@@ -39,10 +39,9 @@ def test_initial_state(compile, nthreads):
                          [(2, [0], [1]), (2, [1], [0]), (3, [1], [1]),
                           (4, [1, 3], [1, 0]), (5, [1, 2, 4], [0, 1, 1]),
                           (15, [4, 7], [0, 0]), (16, [8, 12, 15], [1, 0, 1])])
-@pytest.mark.parametrize("dtype", [np.complex64, np.complex128])
 def test_collapse_state(nqubits, targets, results, dtype, nthreads):
     """Check ``collapse_state`` kernel."""
-    atol = 1e-7 if dtype == np.complex64 else 1e-14
+    atol = 1e-7 if dtype == "complex64" else 1e-14
     state = random_complex((2 ** nqubits,), dtype=dtype)
     slicer = nqubits * [slice(None)]
     for t, r in zip(targets, results):
@@ -151,11 +150,11 @@ def test_swap_pieces(nqubits, nthreads):
         K.assert_allclose(piece1, target_state[1])
 
 
-@pytest.mark.parametrize("dtype", [np.float32, np.float64])
-@pytest.mark.parametrize("inttype", [np.int32, np.int64])
-def test_measure_frequencies(dtype, inttype):
+@pytest.mark.parametrize("realtype", ["float32", "float64"])
+@pytest.mark.parametrize("inttype", ["int32", "int64"])
+def test_measure_frequencies(realtype, inttype):
     import sys
-    probs = np.ones(16, dtype=dtype) / 16
+    probs = np.ones(16, dtype=realtype) / 16
     frequencies = np.zeros(16, dtype=inttype)
     frequencies = K.module.measure_frequencies(frequencies, probs, nshots=1000,
                                                nqubits=4, omp_num_threads=1,
@@ -177,11 +176,11 @@ NONZERO.extend(itertools.combinations(range(8), r=4))
 @pytest.mark.parametrize("nonzero", NONZERO)
 def test_measure_frequencies_sparse_probabilities(nonzero):
     import sys
-    probs = np.zeros(8, dtype=np.float64)
+    probs = np.zeros(8, dtype="float64")
     for i in nonzero:
         probs[i] = 1
     probs = probs / np.sum(probs)
-    frequencies = np.zeros(8, dtype=np.int64)
+    frequencies = np.zeros(8, dtype="int64")
     frequencies = K.module.measure_frequencies(frequencies, probs, nshots=1000,
                                                nqubits=3, omp_num_threads=1,
                                                seed=1234)

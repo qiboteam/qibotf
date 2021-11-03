@@ -15,5 +15,5 @@ def nthreads(num_threads):
 def pytest_generate_tests(metafunc):
     if "num_threads" in metafunc.fixturenames:
         metafunc.parametrize("num_threads", [1, 4])
-#    if "dtype" in metafunc.fixturenames:
-#        metafunc.parametrize("dtype", ["complex128", "complex64"])
+    if "dtype" in metafunc.fixturenames:
+        metafunc.parametrize("dtype", ["complex128", "complex64"])
