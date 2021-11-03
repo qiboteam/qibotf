@@ -36,7 +36,7 @@ def test_initial_state(compile, nthreads):
         func = tf.function(apply_operator)
     final_state = func()
     exact_state = np.array([1] + [0]*15)
-    np.testing.assert_allclose(final_state, exact_state)
+    K.assert_allclose(final_state, exact_state)
 
 
 @pytest.mark.parametrize(("nqubits", "target", "dtype", "compile", "einsum_str"),
@@ -61,7 +61,7 @@ def test_apply_gate(nqubits, target, dtype, compile, einsum_str, nthreads):
     if compile:
         apply_operator = tf.function(apply_operator)
     state = apply_operator(state, gate)
-    np.testing.assert_allclose(target_state, state, atol=_atol)
+    K.assert_allclose(target_state, state, atol=_atol)
 
 
 @pytest.mark.parametrize(("nqubits", "compile"),
@@ -85,8 +85,7 @@ def test_apply_gate_cx(nqubits, compile, nthreads):
     if compile:
         apply_operator = tf.function(apply_operator)
     state = apply_operator(state)
-
-    np.testing.assert_allclose(target_state, state)
+    K.assert_allclose(target_state, state)
 
 
 @pytest.mark.parametrize(("nqubits", "target", "controls", "compile", "einsum_str"),
@@ -116,7 +115,7 @@ def test_apply_gate_controlled(nqubits, target, controls, compile, einsum_str, n
         apply_operator = tf.function(apply_operator)
 
     state = apply_operator(state)
-    np.testing.assert_allclose(state, target_state)
+    K.assert_allclose(state, target_state)
 
 
 @pytest.mark.parametrize(("nqubits", "target", "gate"),
@@ -138,7 +137,7 @@ def test_apply_pauli_gate(nqubits, target, gate, compile, nthreads):
         return getattr(K, "apply_{}".format(gate))(state, qubits, nqubits, (target,))
         apply_operator = tf.function(apply_operator)
     state = apply_operator(state)
-    np.testing.assert_allclose(state, target_state)
+    K.assert_allclose(state, target_state)
 
 
 @pytest.mark.parametrize(("nqubits", "target", "controls"),
@@ -168,7 +167,7 @@ def test_apply_zpow_gate(nqubits, target, controls, compile, threads):
     if compile:
         apply_operator = tf.function(apply_operator)
     state = apply_operator(state)
-    np.testing.assert_allclose(state, target_state)
+    K.assert_allclose(state, target_state)
 
 
 @pytest.mark.parametrize(("nqubits", "targets", "controls",
@@ -204,7 +203,7 @@ def test_apply_twoqubit_gate_controlled(nqubits, targets, controls,
         apply_operator = tf.function(apply_operator)
 
     state = apply_operator(state)
-    np.testing.assert_allclose(state, target_state)
+    K.assert_allclose(state, target_state)
 
 
 @pytest.mark.parametrize(("nqubits", "targets", "controls",
@@ -248,7 +247,7 @@ def test_apply_fsim(nqubits, targets, controls, compile, einsum_str, nthreads):
         apply_operator = tf.function(apply_operator)
 
     state = apply_operator(state)
-    np.testing.assert_allclose(state, target_state)
+    K.assert_allclose(state, target_state)
 
 
 @pytest.mark.parametrize("compile", [False, True])
@@ -267,7 +266,7 @@ def test_apply_swap_with_matrix(compile, nthreads):
     if compile:
         apply_operator = tf.function(apply_operator)
     state = apply_operator(state)
-    np.testing.assert_allclose(state, target_state)
+    K.assert_allclose(state, target_state)
 
 
 @pytest.mark.parametrize(("nqubits", "targets", "controls"),
@@ -301,7 +300,7 @@ def test_apply_swap_general(nqubits, targets, controls, compile, threads):
     if compile:
         apply_operator = tf.function(apply_operator)
     state = apply_operator(state)
-    np.testing.assert_allclose(state, target_state.ravel())
+    K.assert_allclose(state, target_state.ravel())
 
 
 @pytest.mark.parametrize("nqubits,targets,results",
@@ -327,7 +326,7 @@ def test_collapse_state(nqubits, targets, results, dtype, nthreads):
     b2d = 2 ** np.arange(len(results) - 1, -1, -1)
     result = np.array(results).dot(b2d)
     state = K.collapse_state(state, qubits, result, nqubits, True)
-    np.testing.assert_allclose(state, target_state, atol=atol)
+    K.assert_allclose(state, target_state, atol=atol)
 
 
 # this test fails when compiling due to in-place updates of the state
@@ -375,8 +374,8 @@ def test_custom_op_toy_callback(gate, compile, nthreads):
         # case not tested because it fails
         apply_operator = tf.function(apply_operator)
     state, callback = apply_operator(state)
-    np.testing.assert_allclose(state, target_state)
-    np.testing.assert_allclose(callback, target_callback)
+    K.assert_allclose(state, target_state)
+    K.assert_allclose(callback, target_callback)
 
 
 def check_unimplemented_error(func, *args):  # pragma: no cover
@@ -411,7 +410,7 @@ def test_transpose_state(nqubits, ndevices, nthreads):
         else:
             new_state = K.transpose_state(
                 pieces, new_state, nqubits, qubit_order)
-            np.testing.assert_allclose(new_state, target_state)
+            K.assert_allclose(new_state, target_state)
 
 
 @pytest.mark.parametrize("nqubits", [4, 5, 7, 8, 9, 10])
@@ -430,8 +429,8 @@ def test_swap_pieces_zero_global(nqubits, nthreads):
 
         piece0, piece1 = state[0], state[1]
         K.swap_pieces(piece0, piece1, local - 1, nqubits - 1)
-        np.testing.assert_allclose(piece0, target_state[0])
-        np.testing.assert_allclose(piece1, target_state[1])
+        K.assert_allclose(piece0, target_state[0])
+        K.assert_allclose(piece1, target_state[1])
 
 
 @pytest.mark.parametrize("nqubits", [5, 7, 8, 9, 10])
@@ -461,8 +460,8 @@ def test_swap_pieces(nqubits, nthreads):
         state = tf.reshape(state, shape)
         piece0, piece1 = state[0], state[1]
         K.swap_pieces(piece0, piece1, local_qubit - int(global_qubit < local_qubit), nqubits - 1)
-        np.testing.assert_allclose(piece0, target_state[0])
-        np.testing.assert_allclose(piece1, target_state[1])
+        K.assert_allclose(piece0, target_state[0])
+        K.assert_allclose(piece1, target_state[1])
 
 
 @pytest.mark.parametrize("dtype", [np.float32, np.float64])
@@ -481,7 +480,7 @@ def test_measure_frequencies(dtype, inttype):
         target_frequencies = [57, 51, 62, 63, 55, 70, 52, 47, 75, 58, 63,
                               73, 68, 72, 60, 74]
     assert np.sum(frequencies) == 1000
-    np.testing.assert_allclose(frequencies, target_frequencies)
+    K.assert_allclose(frequencies, target_frequencies)
 
 
 NONZERO = list(itertools.combinations(range(8), r=1))
