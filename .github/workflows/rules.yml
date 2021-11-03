@@ -31,6 +31,7 @@ jobs:
         git checkout rmbackends
         python setup.py develop
         cd ..
+        pip install --upgrade typing-extensions
         pip install .
     - name: Test with pylint
       run: |
