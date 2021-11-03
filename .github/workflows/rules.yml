@@ -23,8 +23,6 @@ jobs:
     - name: Install package
       run: |
         python -m pip install --upgrade pip
-        pip install --upgrade pylint
-        pip install --upgrade pytest-cov
         pip install -r requirements.txt
         git clone https://github.com/qiboteam/qibo
         cd qibo
@@ -32,6 +30,8 @@ jobs:
         python setup.py develop
         cd ..
         pip install .
+        pip install --upgrade pylint
+        pip install --upgrade pytest-cov
     - name: Test with pylint
       run: |
         pylint src -E -d E1123,E1120
