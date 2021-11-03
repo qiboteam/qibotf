@@ -7,9 +7,7 @@ from qibo.backends.tensorflow import TensorflowBackend # pylint: disable=E0401
 from qibo.config import raise_error # pylint: disable=E0401
 
 
-class TensorflowCustomBackend(TensorflowBackend, AbstractCustomOperators):  # pragma: no cover
-    # This class is tested in qibo tests, not qibotf, so that qibotf CI
-    # can pass without having to release latest qibo
+class TensorflowCustomBackend(TensorflowBackend, AbstractCustomOperators):
 
     description = "Uses precompiled primitives to apply gates to states. " \
                   "This is the fastest simulation engine."
