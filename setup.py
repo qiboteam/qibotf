@@ -102,7 +102,7 @@ setup(
         "Topic :: Scientific/Engineering :: Physics",
     ],
     install_requires=requirements,
-    python_requires=">=3.6.0",
+    python_requires=">=3.7.0",
     long_description=long_description,
     long_description_content_type='text/markdown',
 )
