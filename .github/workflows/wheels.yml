@@ -54,6 +54,11 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pytest
+        git clone https://github.com/qiboteam/qibo
+        cd qibo
+        git checkout rmbackends
+        pip install .
+        cd ..
         pip install -r requirements.txt
         pip install qibotf --no-index --find-links ./dist/
         pytest --pyargs qibotf

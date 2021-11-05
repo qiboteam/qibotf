@@ -42,9 +42,10 @@ export LD_LIBRARY_PATH=/usr/local/cuda-11.2/lib64/:$LD_LIBRARY_PATH
 # build wheel
 retry $PYTHON -m pip install -r requirements.txt
 retry $PYTHON setup.py bdist_wheel --dist-dir=wheelhouse
+retry $PYTHON -m pip install --upgrade auditwheel
 
 # patch auditwheel
-POLICY_JSON=$(find / -name policy.json)
+POLICY_JSON=$(find / -name manylinux-policy.json)
 sed -i "s/libresolv.so.2\"/libresolv.so.2\", \"libtensorflow_framework.so.2\"/g" $POLICY_JSON
 cat $POLICY_JSON
 
