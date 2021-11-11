@@ -101,7 +101,7 @@ setup(
         "Programming Language :: Python :: 3",
         "Topic :: Scientific/Engineering :: Physics",
     ],
-    install_requires=requirements,
+    install_requires=requirements + ['qibo>=0.1.7rc0'],
     python_requires=">=3.7.0",
     long_description=long_description,
     long_description_content_type='text/markdown',

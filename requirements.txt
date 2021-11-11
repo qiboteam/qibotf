@@ -1,4 +1,3 @@
 # Runtime requirements for qibotf
 
-qibo>=0.1.7rc0
 tensorflow>=2.2,<=2.7.0
