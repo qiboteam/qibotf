@@ -46,6 +46,9 @@ class Build(_build_py):
     def run(self):
         if os.name != 'nt':  # skip windows
             commands = [
+                ["make",
+                 "-C", "src/qibotf/custom_operators/",
+                 "clean"],
                 ["make", "-j", "%s" % os.cpu_count(),
                  "-C", "src/qibotf/custom_operators/"], ]
             for command in commands:
