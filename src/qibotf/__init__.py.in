@@ -1,4 +1,4 @@
-__version__ = "0.0.6"
+__version__ = "0.0.7.dev0"
 
 # tf version used during the compilation of custom operators
 __target_tf_version__ = 'TF_VERSION'
