@@ -25,6 +25,4 @@ Here a compatibility matrix for the qibotf versions:
 
 ## Citation policy
 
-If you use the package please cite the following references:
-- https://arxiv.org/abs/2009.01845
-- https://doi.org/10.5281/zenodo.3997194
+If you use the package please refer to [the documentation](https://qibo.readthedocs.io/en/stable/appendix/citing-qibo.html) for citation instructions.
