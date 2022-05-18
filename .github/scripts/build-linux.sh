@@ -32,6 +32,7 @@ else
 fi
 
 # install cuda-11.2
+yum install yum-utils
 yum-config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/cuda-rhel7.repo
 #curl https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/cuda-repo-rhel7-10.2.89-1.x86_64.rpm -o cuda-repo.rpm
 #rpm -i cuda-repo.rpm
