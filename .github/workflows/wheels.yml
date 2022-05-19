@@ -33,7 +33,7 @@ jobs:
         brew: libomp
     - name: Build linux wheels
       if: startsWith(matrix.os, 'ubuntu')
-      run: docker run --rm -e PYTHON_VERSION -v `pwd`:/io quay.io/pypa/manylinux2014_x86_64 /io/.github/scripts/build-linux.sh
+      run: docker run --rm -e PYTHON_VERSION -v `pwd`:/io quay.io/pypa/manylinux2010_x86_64 /io/.github/scripts/build-linux.sh
       env:
         PYTHON_VERSION: ${{ matrix.python-version }}
     - name: Build macos wheels
